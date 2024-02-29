@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\clienteModel;
 use App\Models\productoModel;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class clienteController extends Controller
@@ -36,7 +37,7 @@ class clienteController extends Controller
      */
     public function create()
     {
-        //
+        return view('clientes.create');
     }
 
     /**
@@ -44,7 +45,22 @@ class clienteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $cliente = new clienteModel();
+        $cliente = $this->createUpdateCliente($request,$cliente);
+        return redirect()->route('clientes.index');
+    }
+
+    public function createUpdateCliente(Request $request, $cliente){
+        $cliente->nombre=$request->nombre;
+        $cliente->apellidoPaterno=$request->apellidoPaterno;
+        $cliente->apellidoMaterno=$request->apellidoMaterno;
+        $cliente->rfc=$request->rfc;
+        $cliente->telefono=$request->telefono;
+        $cliente->correo=$request->correo;
+        $cliente->direccion=$request->direccion;
+        $cliente->idProducto=$request->idProducto;
+        $cliente->save();
+        return $cliente;
     }
 
     /**
@@ -52,7 +68,8 @@ class clienteController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $cliente=clienteModel::where('idCliente',$id)->firstOrFail();
+        return view('clientes.show',compact('cliente'));
     }
 
     /**
@@ -60,7 +77,8 @@ class clienteController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $cliente=clienteModel::where('idCliente',$id)->firstOrFail();
+        return view('clientes.edit',compact('cliente'));
     }
 
     /**
@@ -68,7 +86,9 @@ class clienteController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $cliente=clienteModel::where('idCliente',$id)->firstOrFail();
+        $cliente=$this->createUpdateCliente($request,$cliente);
+        return redirect()->route('clientes.index');
     }
 
     /**
@@ -76,6 +96,12 @@ class clienteController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $cliente=clienteModel::findOrFail($id);
+        try {
+            $cliente->delete();
+            return redirect()->route('clientes.index');
+        } catch (QueryException $e) {
+            return redirect()->route('clientes.index');
+        }
     }
 }

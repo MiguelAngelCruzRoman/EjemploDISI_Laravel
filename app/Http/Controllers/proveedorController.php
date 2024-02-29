@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\proveedorModel;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class proveedorController extends Controller
@@ -33,7 +34,7 @@ class proveedorController extends Controller
      */
     public function create()
     {
-        //
+        return view('proveedores.create');
     }
 
     /**
@@ -41,7 +42,20 @@ class proveedorController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $proveedor = new proveedorModel();
+        $proveedor = $this->createUpdateProveedor($request,$proveedor);
+        return redirect()->route('proveedores.index');        
+    }
+
+    public function createUpdateProveedor(Request $request, $proveedor){
+        $proveedor->razonSocial=$request->razonSocial;
+        $proveedor->nombreCompleto=$request->nombreCompleto;
+        $proveedor->direccion=$request->direccion;
+        $proveedor->telefono=$request->telefono;
+        $proveedor->correo=$request->correo;
+        $proveedor->rfc=$request->rfc;
+        $proveedor->save();
+        return $proveedor;
     }
 
     /**
@@ -49,7 +63,8 @@ class proveedorController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $proveedor=proveedorModel::where('idProveedor',$id)->firstOrFail();
+        return view('proveedores.show',compact('proveedor'));
     }
 
     /**
@@ -57,7 +72,8 @@ class proveedorController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $proveedor=proveedorModel::where('idProveedor',$id)->firstOrFail();
+        return view('proveedores.edit',compact('proveedor'));
     }
 
     /**
@@ -65,7 +81,9 @@ class proveedorController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $proveedor=proveedorModel::where('idProveedor',$id)->firstOrFail();
+        $proveedor=$this->createUpdateProveedor($request,$proveedor);
+        return redirect()->route('proveedores.index');
     }
 
     /**
@@ -73,6 +91,12 @@ class proveedorController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $proveedor=proveedorModel::findOrFail($id);
+        try {
+            $proveedor->delete();
+            return redirect()->route('proveedores.index');
+        } catch (QueryException $e) {
+            return redirect()->route('proveedores.index');
+        }
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\productoModel;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class productoController extends Controller
@@ -33,7 +34,8 @@ class productoController extends Controller
      */
     public function create()
     {
-        //
+        return view('productos.create');
+
     }
 
     /**
@@ -41,15 +43,28 @@ class productoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $producto = new productoModel();
+        $producto = $this->createUpdateProducto($request,$producto);
+        return redirect()->route('productos.index');
     }
 
+    public function createUpdateProducto(Request $request, $producto){
+        $producto->nombre=$request->nombre;
+        $producto->descripcion=$request->descripcion;
+        $producto->precio=$request->precio;
+        $producto->expiracion=$request->expiracion;
+        $producto->stock=$request->stock;
+        $producto->idProveedor=$request->idProveedor;
+        $producto->save();
+        return $producto;
+    }
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        //
+        $producto=productoModel::where('idProducto',$id)->firstOrFail();
+        return view('productos.show',compact('producto'));
     }
 
     /**
@@ -57,7 +72,8 @@ class productoController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $producto=productoModel::where('idProducto',$id)->firstOrFail();
+        return view('productos.edit',compact('producto'));
     }
 
     /**
@@ -65,7 +81,9 @@ class productoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $producto=productoModel::where('idProducto',$id)->firstOrFail();
+        $producto=$this->createUpdateProducto($request,$producto);
+        return redirect()->route('productos.index');
     }
 
     /**
@@ -73,6 +91,12 @@ class productoController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $producto=productoModel::findOrFail($id);
+        try {
+            $producto->delete();
+            return redirect()->route('productos.index');
+        } catch (QueryException $e) {
+            return redirect()->route('productos.index');
+        }
     }
 }
