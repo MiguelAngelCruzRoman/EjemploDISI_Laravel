@@ -26,6 +26,11 @@
                     <i class="fas fa-bars ms-1"></i>
                 </button>
                
+                <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-right z-10">
+                    <a href="{{ url('/productos') }}" class="navbar-brand">Productos</a>
+                    <a href="{{ url('/proveedores') }}" class="navbar-brand">Proveedores</a>
+                    <a href="{{ url('/clientes') }}" class="navbar-brand">Clientes</a>
+                </div>
 
                 @if (Route::has('login'))
                 <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-right z-10">

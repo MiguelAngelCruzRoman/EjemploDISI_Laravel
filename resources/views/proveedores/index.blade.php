@@ -100,17 +100,4 @@
     {{$proveedores->links()}}
     @endif
 </div>
-
- <!-- JS PARA FILTAR Y BUSCAR MEDIANTE PAGINADO -->
- <Script type="text/javascript">
-$('#limit').on('change', function(){
-    window.location.href="{{ route('proveedores.index')}}?limit=" + $(this).val()+ '&search=' + $('#search').val()
-})
-
-$('#search').on('keyup', function(e){
-    if(e.keyCode == 13){
-        window.location.href="{{ route('proveedores.index')}}?limit=" +$('#limit').val()+'&search='+$(this).val()
-    }
-})
-</Script>
 @endsection
